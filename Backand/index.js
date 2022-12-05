@@ -14,20 +14,17 @@ var app=  require('express')();
  //app.use(express.json());
  //app.use(express.urlencoded());
  
- io.on('connection', function(socket){
-    
-
+ io.on('connection', function(socket)
+ {
      socket.on('disconnect',function () 
      {
          console.log('User Disconnected...')
          socket.emit('disconn', {"name": "User Disconnected..."});
      });
-
      socket.on('messages',function (msg) {
           console.log('HELLO');
           console.log(msg);
      });
-
 	 socket.on('vv',function (msg) {
 		console.log('its form unity');
 		console.log(msg);
@@ -41,9 +38,7 @@ var app=  require('express')();
         console.log(`a user connected ${x}`);
 		socket.emit('Conne', msg);
 	});
-
  });
-
  http.listen(80, function(){
      console.log('listening on *:80');
  });
