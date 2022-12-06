@@ -16,9 +16,7 @@ public class UIManager : MonoBehaviour
     public GameObject m_cPlayerPenal;
     public GameObject GamePenal;
 
-
     public TextMeshProUGUI m_UserNameTxt;
-
     private void Start()
     {
         m_ConnectBtn.onClick.AddListener(OnButtonClick);
