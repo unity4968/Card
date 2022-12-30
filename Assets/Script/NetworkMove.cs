@@ -6,16 +6,28 @@ using UnityEngine;
 public class NetworkMove : MonoBehaviour
 {
     public SocketIOComponent socket;
+    float speed = 10;
+    private void Start()
+    {
+        socket = GameObject.Find("SocketIO").GetComponent<SocketIOComponent>();
+    }
     void Update()
     {
-        if (Input.GetKey(KeyCode.D))
+        var move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
+        transform.position += move * speed * Time.deltaTime;
+        if (transform.position!=Vector3.zero)
         {
-            OnMoveRight();
+            ChangePos();
         }
+
     }
-    public void OnMoveRight()
+    public void ChangePos()
     {
         Debug.Log("sending position to node: ");
-        socket.Emit("move right");
+        var pos = new Dictionary<string, string>();
+        pos["position"] = transform.position.ToString();
+        pos["rotation"] = transform.rotation.ToString();
+
+        socket.Emit("position", new JSONObject(pos));
     }
 }

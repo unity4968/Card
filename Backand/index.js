@@ -38,6 +38,16 @@ var app=  require('express')();
         console.log(`a user connected ${x}`);
 		socket.emit('Conne', msg);
 	});
+    socket.on('position',function (msg) 
+	 {
+		//console.log('call from unity...');
+        //const Name = JSON.stringify(msg);
+        const x = msg["position"];
+        const y = msg["rotation"];
+        console.log(`user position: ${x}`);
+        console.log(`user Roation: ${y}`);
+        socket.broadcast.emit('GetmyPos', msg);
+	});
  });
  http.listen(80, function(){
      console.log('listening on *:80');

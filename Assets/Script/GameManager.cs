@@ -13,13 +13,13 @@ public class GameManager : MonoBehaviour
     static SocketIOComponent socket;
     public GameObject playerPrefab;
 
-    // Use this for initialization
+    [ShowInInspector] public Dictionary<string, string> playerpos;
     [ShowInInspector] public Dictionary<string, string> data;
-
     void Start()
     {
         socket = GameObject.Find("SocketIO").GetComponent<SocketIOComponent>();
         socket.On("Conne", OnConnected);
+        socket.On("GetmyPos", GetPOS);
 
         socket.On("disconn", DisConnectuser);
         // data["email"] = "some@email.com";
@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour
         // socket.Emit("messages", new JSONObject(data));
 
         //StartCoroutine(WaitAftersend());
+    }
+    private void GetPOS(SocketIOEvent obj)
+    {
+        Debug.Log("" + obj.data);
+        playerpos = obj.data.ToDictionary();
     }
     private void DisConnectuser(SocketIOEvent obj)
     {
@@ -54,6 +59,7 @@ public class GameManager : MonoBehaviour
         abc = e.data.ToDictionary();
 
         UIManager.instance.OnConnectSuccess(true, abc["UserName"]);
+        Instantiate(playerPrefab, transform.position, Quaternion.identity);
         abc.Clear();
     }
     [Button]
