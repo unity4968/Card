@@ -15,11 +15,13 @@ public class GameManager : MonoBehaviour
 
     [ShowInInspector] public Dictionary<string, string> playerpos;
     [ShowInInspector] public Dictionary<string, string> data;
+    [ShowInInspector] public Dictionary<string, string> paydata;
     void Start()
     {
         socket = GameObject.Find("SocketIO").GetComponent<SocketIOComponent>();
         socket.On("Conne", OnConnected);
         socket.On("GetmyPos", GetPOS);
+        socket.On("token", gettoken);
 
         socket.On("disconn", DisConnectuser);
         // data["email"] = "some@email.com";
@@ -29,6 +31,15 @@ public class GameManager : MonoBehaviour
 
         //StartCoroutine(WaitAftersend());
     }
+
+    private void gettoken(SocketIOEvent obj)
+    {
+        paydata = new Dictionary<string, string>();
+        paydata = obj.data.ToDictionary();
+        Debug.Log(":save into unity:" + obj.data);
+
+    }
+
     private void GetPOS(SocketIOEvent obj)
     {
         Debug.Log("" + obj.data);
@@ -54,12 +65,14 @@ public class GameManager : MonoBehaviour
     }
     void OnConnected(SocketIOEvent e)
     {
+        Debug.Log(" A User Connected:" + e.data);
         var abc = new Dictionary<string, string>();
-        Debug.Log("OnConnected:" + e.data);
+
         abc = e.data.ToDictionary();
 
         UIManager.instance.OnConnectSuccess(true, abc["UserName"]);
-        Instantiate(playerPrefab, transform.position, Quaternion.identity);
+
+        //Instantiate(playerPrefab, transform.position, Quaternion.identity);
         abc.Clear();
     }
     [Button]
@@ -67,7 +80,24 @@ public class GameManager : MonoBehaviour
     {
         StartCoroutine(WaitAftersend());
     }
+
+    public void OnpaybtnClick()
+    {
+
+        StartCoroutine(waitpay());
+    }
+
+    IEnumerator waitpay()
+    {
+        yield return null;
+
+        yield return new WaitForSeconds(1f);
+
+        socket.Emit("Onpay",new JSONObject(paydata));
+
+    }
 }
+
 [System.Serializable]
 public class PlayerJSON
 {
